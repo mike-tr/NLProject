@@ -25,6 +25,10 @@ class Game:
         pygame.quit()
         exit()
 
+class AbstactCar:
+    def __init__(self) -> None:
+        pass
+
 
 class Player(object):
     
@@ -36,8 +40,7 @@ class Player(object):
         
         # Move each axis separately. Note that this checks for collisions both times.
         if dx != 0:
-            self.rect = pygame.transform.rotate( self.rect, 10 ) 
-            #self.move_single_axis(dx, 0)
+            self.move_single_axis(dx, 0)
         if dy != 0:
             self.move_single_axis(0, dy)
     
@@ -51,6 +54,7 @@ class Player(object):
         for wall in self.level.walls:
             if self.rect.colliderect(wall.rect):
                 if dx > 0: # Moving right; Hit the left side of the wall
+                    
                     self.rect.right = wall.rect.left
                 if dx < 0: # Moving left; Hit the right side of the wall
                     self.rect.left = wall.rect.right
@@ -79,16 +83,18 @@ word = [
 
 level = Level()
 
-x = y = 0
-for row in word:
-    for col in row:
-        if col == "W":
-            level.addWall(x,y)
-        if col == "E":
-            end_rect = pygame.Rect(x, y, 16, 16)
-        x += 16
-    y += 16
-    x = 0
+# x = y = 0
+# for row in word:
+#     for col in row:
+#         if col == "W":
+#             level.addWall(x,y)
+#         if col == "E":
+#             end_rect = pygame.Rect(x, y, 16, 16)
+#         x += 16
+#     y += 16
+#     x = 0
+
+end_rect = pygame.Rect(200, 200, 16, 16)
 
 game = Game(800,640)
 player = Player(level) # Create the player
@@ -109,7 +115,7 @@ def loop(screen : pygame.Surface):
     if player.rect.colliderect(end_rect):
         print("you win!")
         return False
-    
+
     # Draw the scene
     screen.fill((0, 0, 0))
     level.draw(screen)
