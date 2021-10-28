@@ -81,6 +81,7 @@ def rebuildLevel(level : Level):
                 level.addWall(x * 16,y * 16)
 
 rebuildLevel(level)
+level.add_path([(1,1),(1,2),(1,3),(1,4)])
 
 end_rect = pygame.Rect(200, 200, 16, 16)
 
@@ -88,32 +89,8 @@ game = Game(800,640)
 player = Player(level) # Create the player
 
 def loop(screen : pygame.Surface):
-    # key = pygame.key.get_pressed()
-    # if key[pygame.K_LEFT]:
-    #     player.move(-2, 0)
-    # if key[pygame.K_RIGHT]:
-    #     player.move(2, 0)
-    # if key[pygame.K_UP]:
-    #     player.move(0, -2)
-    # if key[pygame.K_DOWN]:
-    #     player.move(0, 2)
-    
-    # # Just added this to make it slightly fun ;)
-    # if player.rect.colliderect(end_rect):
-    #     print("you win!")
-    #     return False
-
-    # Draw the scene
     screen.fill((0, 0, 0))
     level.draw(screen)
-
-    # wall = m.addWall()
-    # if(wall == -1):
-    #     pass
-    # else:
-    #     rebuildLevel(level)
-    # pygame.draw.rect(screen, (255, 0, 0), end_rect)
-    # pygame.draw.rect(screen, (255, 200, 0), player.rect)
     return True
 
 game.init(loop)
