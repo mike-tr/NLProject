@@ -1,5 +1,6 @@
 import pygame
 from level import Level
+from maze import Maze
 
 class Game:
     def __init__(self, width, length) -> None:
@@ -83,46 +84,56 @@ word = [
 
 level = Level()
 
-# x = y = 0
-# for row in word:
-#     for col in row:
-#         if col == "W":
-#             level.addWall(x,y)
-#         if col == "E":
-#             end_rect = pygame.Rect(x, y, 16, 16)
-#         x += 16
-#     y += 16
-#     x = 0
+m = Maze(31,31)
+m.makeMaze()
+# m.maze[1][3] = 1
+# print(m.maze)
+
+def rebuildLevel(level : Level):
+    level.reset()
+    x = y = 0
+    for y in range(m.height):
+        for x in range(m.width):
+            if m.maze[y][x] == 1:
+                level.addWall(x * 16,y * 16)
+
+rebuildLevel(level)
 
 end_rect = pygame.Rect(200, 200, 16, 16)
 
 game = Game(800,640)
 player = Player(level) # Create the player
 
-
 def loop(screen : pygame.Surface):
-    key = pygame.key.get_pressed()
-    if key[pygame.K_LEFT]:
-        player.move(-2, 0)
-    if key[pygame.K_RIGHT]:
-        player.move(2, 0)
-    if key[pygame.K_UP]:
-        player.move(0, -2)
-    if key[pygame.K_DOWN]:
-        player.move(0, 2)
+    # key = pygame.key.get_pressed()
+    # if key[pygame.K_LEFT]:
+    #     player.move(-2, 0)
+    # if key[pygame.K_RIGHT]:
+    #     player.move(2, 0)
+    # if key[pygame.K_UP]:
+    #     player.move(0, -2)
+    # if key[pygame.K_DOWN]:
+    #     player.move(0, 2)
     
-    # Just added this to make it slightly fun ;)
-    if player.rect.colliderect(end_rect):
-        print("you win!")
-        return False
+    # # Just added this to make it slightly fun ;)
+    # if player.rect.colliderect(end_rect):
+    #     print("you win!")
+    #     return False
 
     # Draw the scene
     screen.fill((0, 0, 0))
     level.draw(screen)
-    pygame.draw.rect(screen, (255, 0, 0), end_rect)
-    pygame.draw.rect(screen, (255, 200, 0), player.rect)
+
+    wall = m.addWall()
+    if(wall == -1):
+        pass
+    else:
+        rebuildLevel(level)
+    # pygame.draw.rect(screen, (255, 0, 0), end_rect)
+    # pygame.draw.rect(screen, (255, 200, 0), player.rect)
     return True
 
 game.init(loop)
+
 
 exit()

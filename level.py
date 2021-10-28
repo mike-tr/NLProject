@@ -10,6 +10,9 @@ class Level:
     def __init__(self) -> None:
         self.walls : list[Wall] = []
     
+    def reset(self):
+        self.walls : list[Wall] = []
+
     def addWall(self, x, y):
         Wall(self,x,y,16,16)
 
