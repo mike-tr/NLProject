@@ -26,52 +26,55 @@ class Game:
         pygame.quit()
         exit()
 
-class AbstactCar:
-    def __init__(self) -> None:
-        pass
+# class AbstactCar:
+#     def __init__(self) -> None:
+#         pass
 
 
-class Player(object):
+# class Player(object):
     
-    def __init__(self, level : Level):
-        self.rect = pygame.Rect(32, 32, 32, 16)
-        self.level = level
+#     def __init__(self, level : Level):
+#         self.rect = pygame.Rect(32, 32, 32, 16)
+#         self.level = level
 
-    def move(self, dx, dy):
+#     def move(self, dx, dy):
         
-        # Move each axis separately. Note that this checks for collisions both times.
-        if dx != 0:
-            self.move_single_axis(dx, 0)
-        if dy != 0:
-            self.move_single_axis(0, dy)
+#         # Move each axis separately. Note that this checks for collisions both times.
+#         if dx != 0:
+#             self.move_single_axis(dx, 0)
+#         if dy != 0:
+#             self.move_single_axis(0, dy)
     
-    def move_single_axis(self, dx, dy):
+#     def move_single_axis(self, dx, dy):
         
-        # Move the rect
-        self.rect.x += dx
-        self.rect.y += dy
+#         # Move the rect
+#         self.rect.x += dx
+#         self.rect.y += dy
 
-        # If you collide with a wall, move out based on velocity
-        for wall in self.level.walls:
-            if self.rect.colliderect(wall.rect):
-                if dx > 0: # Moving right; Hit the left side of the wall
+#         # If you collide with a wall, move out based on velocity
+#         for wall in self.level.walls:
+#             if self.rect.colliderect(wall.rect):
+#                 if dx > 0: # Moving right; Hit the left side of the wall
                     
-                    self.rect.right = wall.rect.left
-                if dx < 0: # Moving left; Hit the right side of the wall
-                    self.rect.left = wall.rect.right
-                if dy > 0: # Moving down; Hit the top side of the wall
-                    self.rect.bottom = wall.rect.top
-                if dy < 0: # Moving up; Hit the bottom side of the wall
-                    self.rect.top = wall.rect.bottom
+#                     self.rect.right = wall.rect.left
+#                 if dx < 0: # Moving left; Hit the right side of the wall
+#                     self.rect.left = wall.rect.right
+#                 if dy > 0: # Moving down; Hit the top side of the wall
+#                     self.rect.bottom = wall.rect.top
+#                 if dy < 0: # Moving up; Hit the bottom side of the wall
+#                     self.rect.top = wall.rect.bottom
 
+# generate level object
 level = Level()
 
+# create maze class of size 31x31
 m = Maze(31,31)
 # m.initMaze()
-m.buildMaze()
-# m.maze[1][3] = 1
-# print(m.maze)
 
+# build a maze
+m.buildMaze()
+
+# just a function that places white cubes for drawing
 def rebuildLevel(level : Level):
     level.reset()
     x = y = 0
@@ -80,19 +83,24 @@ def rebuildLevel(level : Level):
             if m.maze[y][x] == 1:
                 level.addWall(x * 16,y * 16)
 
+# draw maze on the level
 rebuildLevel(level)
+# draw path on the level
 level.add_path([(1,1),(1,2),(1,3),(1,4)])
 
-end_rect = pygame.Rect(200, 200, 16, 16)
+# end_rect = pygame.Rect(200, 200, 16, 16)
 
+# create window
 game = Game(800,640)
-player = Player(level) # Create the player
+# player = Player(level) # Create the player
 
+# draw loop
 def loop(screen : pygame.Surface):
     screen.fill((0, 0, 0))
     level.draw(screen)
     return True
 
+# actually start drawing
 game.init(loop)
 
 
