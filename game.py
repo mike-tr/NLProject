@@ -64,28 +64,11 @@ class Player(object):
                 if dy < 0: # Moving up; Hit the bottom side of the wall
                     self.rect.top = wall.rect.bottom
 
-word = [
-"WWWWWWWWWWWWWWWWWWWW",
-"W                  W",
-"W         WWWWWW   W",
-"W   WWWW       W   W",
-"W   W        WWWW  W",
-"W WWW  WWWW        W",
-"W   W     W W      W",
-"W   W     W   WWW WW",
-"W   WWW WWW   W W  W",
-"W     W   W   W W  W",
-"WWW   W   WWWWW W  W",
-"W W      WW        W",
-"W W   WWWW   WWW   W",
-"W     W    E   W   W",
-"WWWWWWWWWWWWWWWWWWWW",
-]
-
 level = Level()
 
 m = Maze(31,31)
-m.makeMaze()
+# m.initMaze()
+m.buildMaze()
 # m.maze[1][3] = 1
 # print(m.maze)
 
@@ -124,11 +107,11 @@ def loop(screen : pygame.Surface):
     screen.fill((0, 0, 0))
     level.draw(screen)
 
-    wall = m.addWall()
-    if(wall == -1):
-        pass
-    else:
-        rebuildLevel(level)
+    # wall = m.addWall()
+    # if(wall == -1):
+    #     pass
+    # else:
+    #     rebuildLevel(level)
     # pygame.draw.rect(screen, (255, 0, 0), end_rect)
     # pygame.draw.rect(screen, (255, 200, 0), player.rect)
     return True

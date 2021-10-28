@@ -14,26 +14,9 @@ class MCell(Union):
 
 class Maze:
     def __init__(self, width, height) -> None:
-        self.maze = []
-        self.empty = []
         self.width = width
         self.height = height
-
-        self.cells : dict[any,MCell] = {}
-        self.walls = []
-        self.perm = []
-        self.iter = 0
-        for y in range(height):
-            ar = []
-            for x in range(width):
-                if x == 0 or x == width-1 or y == 0 or y == height - 1:
-                    ar.append(1)
-                else:
-                    ar.append(0)
-                    self.empty.append((x,y))
-            self.maze.append(ar)
-        self.floor = (width - 1)*(height-1)
-    
+        self.modified = False
     
     def getRandomEmpty(self):
         return self.empty[random.randint(0, len(self.empty) - 1)]
@@ -41,10 +24,28 @@ class Maze:
     def setVal(self,x,y,v):
         self.maze[y][x] = v
 
-    def makeMaze(self): 
-        # Randomized Kruskal's algorithm
-        self.walls = []
+    def reset(self):
+        self.maze = []
+        self.empty = []
         self.cells : dict[any,MCell] = {}
+        self.walls = []
+        self.perm = []
+        self.iter = 0
+        for y in range(self.height):
+            ar = []
+            for x in range(self.width):
+                if x == 0 or x == self.width-1 or y == 0 or y == self.height - 1:
+                    ar.append(1)
+                else:
+                    ar.append(0)
+                    self.empty.append((x,y))
+            self.maze.append(ar)
+        self.floor = (self.width - 1)*(self.height-1)
+
+    
+    def initMaze(self): 
+        self.reset()
+        # Randomized Kruskal's algorithm
 
         s = 0
         for x in range(1, self.width - 1):
@@ -68,12 +69,17 @@ class Maze:
         #for i in range(len(self.perm)):
             #self.addWall()
 
+    def buildMaze(self):
+        self.initMaze()
+        while self.addWall() != -2:
+            continue
+    
     def addWall(self):
         if self.iter >= len(self.perm):
-            return -1
+            return -2
 
         wall = self.walls[self.perm[self.iter]]
-        ni = neibours(self, wall[0], wall[1])
+        ni = get_neibours(self, wall[0], wall[1])
         # print(wall, ni)
         connected = True
         f = -1
@@ -90,21 +96,28 @@ class Maze:
 
         if not connected:
             wc = self.cells[wall]
+            # if wc.x % 2 == 0 and wc.y % 2 == 0:
+            #     print(wc.x, wc.y)
+
             for n in ni:
                 ncell = self.cells[n]
                 if ncell.wall:
+                    r = random.randint(self.iter+1, len(self.walls))
+                    self.perm = np.insert(self.perm, r, len(self.walls))
+                    self.walls.append((ncell.x, ncell.y))
                     continue
                 wc.add_child(ncell)
 
             wc.wall = False
             self.setVal(wall[0], wall[1], 0)
             self.iter += 1
+            self.modified = True
             return wall
         self.iter += 1
         return -1
        
         
-def neibours(maze : Maze, x, y):
+def get_neibours(maze : Maze, x, y):
     ni = set()
     for i in range(-1,2,2):
         if x + i < maze.width - 1 and x + i > 0:
@@ -112,4 +125,6 @@ def neibours(maze : Maze, x, y):
         if y + i < maze.height - 1 and y + i > 0:
             ni.add((x,y+i))
     return ni
-    
+
+def find_free(maze : Maze):
+    pass
