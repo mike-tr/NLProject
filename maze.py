@@ -21,8 +21,16 @@ class Maze:
     def getRandomEmpty(self):
         return self.empty[random.randint(0, len(self.empty) - 1)]
     
-    def setVal(self,x,y,v):
+    def setValxy(self,x,y,v):
         self.maze[y][x] = v
+
+    def getVal(self, pos):
+        return self.maze[pos[1]][pos[0]]
+
+    def setVal(self, pos, v):
+        # pos : (x,y)
+        self.maze[pos[1]][pos[0]] = v
+
 
     def reset(self):
         self.maze = []
@@ -53,11 +61,11 @@ class Maze:
                 cell = MCell(x,y, True)
                 if x % 2 == 0 and y % 2 == 0:
                     # walls.append((x,y))
-                    self.setVal(x,y,1)
+                    self.setValxy(x,y,1)
                     cell.m = 1
                 elif  x % 2 == 0 or y % 2 == 0:
                     self.walls.append((x,y))
-                    self.setVal(x,y,1)
+                    self.setValxy(x,y,1)
                 else:
                     cell.wall = False
                 s+=1
@@ -109,7 +117,7 @@ class Maze:
                 wc.add_child(ncell)
 
             wc.wall = False
-            self.setVal(wall[0], wall[1], 0)
+            self.setValxy(wall[0], wall[1], 0)
             self.iter += 1
             self.modified = True
             return wall

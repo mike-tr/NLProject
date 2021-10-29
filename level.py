@@ -36,6 +36,7 @@ class Level:
         pygame.draw.rect(screen, self.background.color, self.background.rect)
         for pnode in self.path:
             pygame.draw.rect(screen, pnode.color, pnode.rect)
+            
         for wall in self.walls:
             wall : Wall
             pygame.draw.rect(screen, self.wall_color, wall.rect)

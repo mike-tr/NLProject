@@ -1,6 +1,8 @@
 import pygame
 from level import Level
 from maze import Maze
+from player import Player
+from pathFinder import find_path
 
 class Game:
     def __init__(self, width, length) -> None:
@@ -26,53 +28,17 @@ class Game:
         pygame.quit()
         exit()
 
-# class AbstactCar:
-#     def __init__(self) -> None:
-#         pass
-
-
-# class Player(object):
-    
-#     def __init__(self, level : Level):
-#         self.rect = pygame.Rect(32, 32, 32, 16)
-#         self.level = level
-
-#     def move(self, dx, dy):
-        
-#         # Move each axis separately. Note that this checks for collisions both times.
-#         if dx != 0:
-#             self.move_single_axis(dx, 0)
-#         if dy != 0:
-#             self.move_single_axis(0, dy)
-    
-#     def move_single_axis(self, dx, dy):
-        
-#         # Move the rect
-#         self.rect.x += dx
-#         self.rect.y += dy
-
-#         # If you collide with a wall, move out based on velocity
-#         for wall in self.level.walls:
-#             if self.rect.colliderect(wall.rect):
-#                 if dx > 0: # Moving right; Hit the left side of the wall
-                    
-#                     self.rect.right = wall.rect.left
-#                 if dx < 0: # Moving left; Hit the right side of the wall
-#                     self.rect.left = wall.rect.right
-#                 if dy > 0: # Moving down; Hit the top side of the wall
-#                     self.rect.bottom = wall.rect.top
-#                 if dy < 0: # Moving up; Hit the bottom side of the wall
-#                     self.rect.top = wall.rect.bottom
 
 # generate level object
 
 # create maze class of size 31x31
 m = Maze(31,31)
 level = Level(m.width * 16, m.height * 16, (255,255,224), (222,184,135))
-# m.initMaze()5
-
+m.initMaze()
+#m.reset()
 # build a maze
 m.buildMaze()
+
 
 # just a function that places white cubes for drawing
 def rebuildLevel(level : Level):
@@ -86,18 +52,40 @@ def rebuildLevel(level : Level):
 # draw maze on the level
 rebuildLevel(level)
 # draw path on the level
-level.add_path([(1,1),(1,2),(1,3),(1,4)])
 
 # end_rect = pygame.Rect(200, 200, 16, 16)
 
 # create window
 game = Game(800,640)
 # player = Player(level) # Create the player
+player = Player(level,1,1,16,16)
+end_rect = pygame.Rect(29 * 16 + 1, 29 * 16 + 1, 14, 14)
 
 # draw loop
 def loop(screen : pygame.Surface):
+    key = pygame.key.get_pressed()
+    if key[pygame.K_LEFT]:
+        player.move(-2, 0)
+    if key[pygame.K_RIGHT]:
+        player.move(2, 0)
+    if key[pygame.K_UP]:
+        player.move(0, -2)
+    if key[pygame.K_DOWN]:
+        player.move(0, 2)
+    # m.addWall()
+    # rebuildLevel(level)
     screen.fill((0, 0, 0))
     level.draw(screen)
+    pygame.draw.rect(screen, (0, 255, 0), end_rect)
+    pygame.draw.rect(screen, (255, 200, 0), player.rect)
+
+
+    level.add_path(find_path(m, player.pos(), (29,29)))
+
+    if player.rect.colliderect(end_rect):
+        print("you win!")
+        return False
+
     return True
 
 # actually start drawing
