@@ -65,11 +65,11 @@ class Game:
 #                     self.rect.top = wall.rect.bottom
 
 # generate level object
-level = Level()
 
 # create maze class of size 31x31
 m = Maze(31,31)
-# m.initMaze()
+level = Level(m.width * 16, m.height * 16, (255,255,224), (222,184,135))
+# m.initMaze()5
 
 # build a maze
 m.buildMaze()
