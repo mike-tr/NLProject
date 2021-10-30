@@ -3,6 +3,7 @@ from level import Level
 from maze import Maze
 from player import Player
 from pathFinder import find_path
+from mazeToInput import generate_xSamples_on_maze, empty_spot, generate_xSamples_random
 
 class Game:
     def __init__(self, width, length) -> None:
@@ -58,8 +59,14 @@ rebuildLevel(level)
 # create window
 game = Game(800,640)
 # player = Player(level) # Create the player
-player = Player(level,1,1,16,16)
-end_rect = pygame.Rect(29 * 16 + 1, 29 * 16 + 1, 14, 14)
+player_pos = empty_spot(m.width, m.height)
+player = Player(level,player_pos[0],player_pos[1],16,16)
+
+food_pos = empty_spot(m.width, m.height)
+food_rect = pygame.Rect(food_pos[0] * 16 + 1, food_pos[1] * 16 + 1, 14, 14)
+
+#gemerate_xSamples_on_maze(m, 5)
+generate_xSamples_random(31,31,100)
 
 # draw loop
 def loop(screen : pygame.Surface):
@@ -76,13 +83,16 @@ def loop(screen : pygame.Surface):
     # rebuildLevel(level)
     screen.fill((0, 0, 0))
     level.draw(screen)
-    pygame.draw.rect(screen, (0, 255, 0), end_rect)
-    pygame.draw.rect(screen, (255, 200, 0), player.rect)
+    pygame.draw.rect(screen, (0, 255, 0), food_rect)
+    pygame.draw.rect(screen, (70, 130, 180), player.rect)
 
+    # print(mazeToInput(m, player.posNormalized(), food_pos))
+    # print(m.maze)
 
-    level.add_path(find_path(m, player.pos(), (29,29)))
+    #print(find_path(m, player.posNormalized(), food_pos))
+    level.add_path(find_path(m, player.posNormalized(), food_pos))
 
-    if player.rect.colliderect(end_rect):
+    if player.rect.colliderect(food_rect):
         print("you win!")
         return False
 

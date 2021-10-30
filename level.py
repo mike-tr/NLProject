@@ -25,6 +25,8 @@ class Level:
         Wall(self,x,y,16,16)
 
     def add_path(self, path):
+        if path == None:
+            return
         self.path = []
         for pos in path:
             self.addBlock(pos[0] * 16, pos[1] * 16)

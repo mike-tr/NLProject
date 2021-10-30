@@ -10,8 +10,11 @@ class Player(object):
         self.level = level
         self.rect = pygame.Rect(x * width + halfw, y * height + halfh, halfw, halfh)
 
-    def pos(self):
+    def posNormalized(self):
         return math.floor(self.rect.centerx / 16), math.floor(self.rect.centery / 16)
+
+    def pos(self):
+        return self.rect.center
 
     def move(self, dx, dy):
         
