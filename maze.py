@@ -6,22 +6,23 @@ from union import Union
 
 
 class MCell(Union):
-    def __init__(self,x,y, wall) -> None:
+    def __init__(self, x, y, wall) -> None:
         Union.__init__(self)
         self.x = x
         self.y = y
         self.wall = wall
+
 
 class Maze:
     def __init__(self, width, height) -> None:
         self.width = width
         self.height = height
         self.modified = False
-    
+
     def getRandomEmpty(self):
         return self.empty[random.randint(0, len(self.empty) - 1)]
-    
-    def setValxy(self,x,y,v):
+
+    def setValxy(self, x, y, v):
         self.maze[y][x] = v
 
     def getVal(self, pos):
@@ -31,11 +32,10 @@ class Maze:
         # pos : (x,y)
         self.maze[pos[1]][pos[0]] = v
 
-
     def reset(self):
         self.maze = []
         self.empty = []
-        self.cells : dict[any,MCell] = {}
+        self.cells: dict[any, MCell] = {}
         self.walls = []
         self.perm = []
         self.iter = 0
@@ -46,42 +46,40 @@ class Maze:
                     ar.append(1)
                 else:
                     ar.append(0)
-                    self.empty.append((x,y))
+                    self.empty.append((x, y))
             self.maze.append(ar)
         self.floor = (self.width - 1)*(self.height-1)
 
-    
-    def initMaze(self): 
+    def initMaze(self):
         self.reset()
         # Randomized Kruskal's algorithm
 
         s = 0
         for x in range(1, self.width - 1):
             for y in range(1, self.height - 1):
-                cell = MCell(x,y, True)
+                cell = MCell(x, y, True)
                 if x % 2 == 0 and y % 2 == 0:
                     # walls.append((x,y))
-                    self.setValxy(x,y,1)
+                    self.setValxy(x, y, 1)
                     cell.m = 1
-                elif  x % 2 == 0 or y % 2 == 0:
-                    self.walls.append((x,y))
-                    self.setValxy(x,y,1)
+                elif x % 2 == 0 or y % 2 == 0:
+                    self.walls.append((x, y))
+                    self.setValxy(x, y, 1)
                 else:
                     cell.wall = False
-                s+=1
-                self.cells[(x,y)] = cell
-                
+                s += 1
+                self.cells[(x, y)] = cell
 
         self.perm = np.random.permutation(range(len(self.walls)))
         # print(perm)
-        #for i in range(len(self.perm)):
-            #self.addWall()
+        # for i in range(len(self.perm)):
+        # self.addWall()
 
-    def buildMaze(self):
+    def rebuildMaze(self):
         self.initMaze()
         while self.addWall() != -2:
             continue
-    
+
     def addWall(self):
         if self.iter >= len(self.perm):
             return -2
@@ -123,16 +121,17 @@ class Maze:
             return wall
         self.iter += 1
         return -1
-       
-        
-def get_neibours(maze : Maze, x, y):
+
+
+def get_neibours(maze: Maze, x, y):
     ni = set()
-    for i in range(-1,2,2):
+    for i in range(-1, 2, 2):
         if x + i < maze.width - 1 and x + i > 0:
-            ni.add((x+i,y))
+            ni.add((x+i, y))
         if y + i < maze.height - 1 and y + i > 0:
-            ni.add((x,y+i))
+            ni.add((x, y+i))
     return ni
 
-def find_free(maze : Maze):
+
+def find_free(maze: Maze):
     pass

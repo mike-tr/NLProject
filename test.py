@@ -1,36 +1,30 @@
-import pygame
+import random
 
-pygame.init()
-window = pygame.display.set_mode((640, 640))
+# def f(t, a):
+#     c = 0
+#     i = -t + a
+#     while i <= t:
+#         print(i)
+#         i += 1
+#         c += 1
+#     print(c)
 
-sprite1 = pygame.sprite.Sprite()
-sprite1.image = pygame.Surface((80, 80), pygame.SRCALPHA)
-pygame.draw.circle(sprite1.image, (255, 0, 0), (40, 40), 40)
-sprite1.rect = pygame.Rect(*window.get_rect().center, 0, 0).inflate(40, 40)
-sprite2 = pygame.sprite.Sprite()
-sprite2.image = pygame.Surface((80, 80), pygame.SRCALPHA)
-pygame.draw.circle(sprite2.image, (0, 255, 0), (40, 40), 40)
-sprite2.rect = pygame.Rect(*window.get_rect().center, 0, 0).inflate(80, 80)
+# f(5,0)
+# f(5,0.5)
 
-all_group = pygame.sprite.Group([sprite2, sprite1])
-test_group = pygame.sprite.Group(sprite2)
 
-run = True
-while run:
-    for event in pygame.event.get():
-        if event.type == pygame.QUIT:
-            run = False
+def randoms(tries):
+    i = 0
+    dic = {}
+    # for j in range(1,11):
+    #     dic[j] = 0
+    dic[1] = dic[10] = 0
+    while i < tries:
+        i += 1
+        r = random.randint(1, 10)
+        if not 2 <= r <= 9:
+            dic[r] += 1
+    return dic, dic[10] > dic[1]
 
-    sprite1.rect.center = pygame.mouse.get_pos()
-    sprite1.rect.centerx -= 15
-    sprite1.rect.centery -= 15
-    collide = pygame.sprite.spritecollide(sprite1, test_group, False, pygame.sprite.collide_circle)
 
-    window.fill(0)
-    all_group.draw(window)
-    for s in collide:
-        pygame.draw.circle(window, (255, 255, 255), s.rect.center, s.rect.width // 2, 5)
-    pygame.display.flip()
-
-pygame.quit()
-exit()
+print(randoms(100000))

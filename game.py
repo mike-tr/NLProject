@@ -1,105 +1,95 @@
 import pygame
 from level import Level
 from maze import Maze
-from player import Player
+from player import Player, Direction
 from pathFinder import find_path
-from mazeToInput import generate_xSamples_on_maze, empty_spot, generate_xSamples_random
-
-class Game:
-    def __init__(self, width, length) -> None:
-        pygame.init()
-        self.window = pygame.display.set_mode((width, length))
-        self.run = True
-        self.draw = None
-        self.clock = pygame.time.Clock()
-        self.fps = 60
-    
-    def init(self, draw):
-        self.draw = draw
-        self.loop()
-    
-    def loop(self):
-        while self.run:
-            self.clock.tick(self.fps)
-            for event in pygame.event.get():
-                if event.type == pygame.QUIT:
-                    self.run = False
-            self.run = self.draw(self.window) and self.run
-            pygame.display.flip()
-        pygame.quit()
-        exit()
-
+from mazeToInput import generate_xSamples_on_maze, empty_spot, generate_xSamples_random, maze_to_1D
+from engine import Engine
 
 # generate level object
 
-# create maze class of size 31x31
-m = Maze(31,31)
-level = Level(m.width * 16, m.height * 16, (255,255,224), (222,184,135))
-m.initMaze()
-#m.reset()
-# build a maze
-m.buildMaze()
+maze_width = 31
+maze_height = 31
 
 
-# just a function that places white cubes for drawing
-def rebuildLevel(level : Level):
-    level.reset()
-    x = y = 0
-    for y in range(m.height):
-        for x in range(m.width):
-            if m.maze[y][x] == 1:
-                level.addWall(x * 16,y * 16)
+class Game:
+    def __init__(self, width, height) -> None:
+        self.game = Engine(width, height)
+        self.m = Maze(maze_width, maze_height)
+        self.level = Level(self.m.width * 16, self.m.height * 16,
+                           (255, 255, 224), (222, 184, 135))
+        self.input_loop = None
+        self.init()
 
-# draw maze on the level
-rebuildLevel(level)
-# draw path on the level
+    def init(self):
+        self.m.rebuildMaze()
+        self.rebuildLevel()
 
-# end_rect = pygame.Rect(200, 200, 16, 16)
+        player_pos = empty_spot(self.m.width, self.m.height)
+        self.player = Player(self.level, player_pos[0], player_pos[1], 16, 16)
 
-# create window
-game = Game(800,640)
-# player = Player(level) # Create the player
-player_pos = empty_spot(m.width, m.height)
-player = Player(level,player_pos[0],player_pos[1],16,16)
+        self.food_pos = empty_spot(self.m.width, self.m.height)
+        self.food_rect = pygame.Rect(
+            self.food_pos[0] * 16 + 1, self.food_pos[1] * 16 + 1, 14, 14)
 
-food_pos = empty_spot(m.width, m.height)
-food_rect = pygame.Rect(food_pos[0] * 16 + 1, food_pos[1] * 16 + 1, 14, 14)
+    def rebuildLevel(self):
+        self.level.reset()
+        x = y = 0
+        for y in range(self.m.height):
+            for x in range(self.m.width):
+                if self.m.maze[y][x] == 1:
+                    self.level.addWall(x * 16, y * 16)
 
-#gemerate_xSamples_on_maze(m, 5)
-generate_xSamples_random(31,31,100)
+    def start(self, input_loop):
+        self.input_loop = input_loop
+        self.game.init(self)
 
-# draw loop
-def loop(screen : pygame.Surface):
+    def loop(self, screen: pygame.Surface):
+        key = self.input_loop()
+        self.player.moveDir(key)
+        # player.move(0, 1)
+        # m.addWall()
+        # rebuildLevel(level)
+        screen.fill((0, 0, 0))
+        self.level.draw(screen)
+        pygame.draw.rect(screen, (0, 255, 0), self.food_rect)
+        pygame.draw.rect(screen, (70, 130, 180), self.player.rect)
+
+        # print(mazeToInput(m, player.posNormalized(), food_pos))
+        # print(m.maze)
+
+        # print(find_path(m, player.posNormalized(), food_pos))
+        self.level.add_path(
+            find_path(self.m, self.player.posNormalized(), self.food_pos))
+
+        self.player.update()
+        if self.player.rect.colliderect(self.food_rect):
+            print("you win!")
+            return False
+
+        return True
+
+
+def input_loop_human():
     key = pygame.key.get_pressed()
     if key[pygame.K_LEFT]:
-        player.move(-2, 0)
+        return Direction.LEFT
+        # player.move(-1, 0)
     if key[pygame.K_RIGHT]:
-        player.move(2, 0)
+        return Direction.RIGHT
+        # player.move(1, 0)
     if key[pygame.K_UP]:
-        player.move(0, -2)
+        return Direction.UP
+        # player.move(0, -1)
     if key[pygame.K_DOWN]:
-        player.move(0, 2)
-    # m.addWall()
-    # rebuildLevel(level)
-    screen.fill((0, 0, 0))
-    level.draw(screen)
-    pygame.draw.rect(screen, (0, 255, 0), food_rect)
-    pygame.draw.rect(screen, (70, 130, 180), player.rect)
-
-    # print(mazeToInput(m, player.posNormalized(), food_pos))
-    # print(m.maze)
-
-    #print(find_path(m, player.posNormalized(), food_pos))
-    level.add_path(find_path(m, player.posNormalized(), food_pos))
-
-    if player.rect.colliderect(food_rect):
-        print("you win!")
-        return False
-
-    return True
-
-# actually start drawing
-game.init(loop)
+        return Direction.DOWN
+    return Direction.NONE
 
 
-exit()
+def run_human():
+    game = Game(640, 640)
+    game.start(input_loop_human)
+    exit()
+
+
+# run_human()
