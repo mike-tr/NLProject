@@ -8,17 +8,18 @@ from engine import Engine
 
 # generate level object
 
-maze_width = 31
-maze_height = 31
+maze_width = 11
+maze_height = 11
 
 
 class Game:
-    def __init__(self, width, height) -> None:
-        self.game = Engine(width, height)
+    def __init__(self, width, height, fps) -> None:
+        self.game = Engine(width, height, fps)
         self.m = Maze(maze_width, maze_height)
         self.level = Level(self.m.width * 16, self.m.height * 16,
                            (255, 255, 224), (222, 184, 135))
         self.input_loop = None
+        self.hightlight = False
         self.init()
 
     def init(self):
@@ -28,7 +29,8 @@ class Game:
         player_pos = empty_spot(self.m.width, self.m.height)
         self.player = Player(self.level, player_pos[0], player_pos[1], 16, 16)
 
-        self.food_pos = empty_spot(self.m.width, self.m.height)
+        # self.food_pos = empty_spot(self.m.width, self.m.height)
+        self.food_pos = (self.m.width - 2, self.m.height - 2)
         self.food_rect = pygame.Rect(
             self.food_pos[0] * 16 + 1, self.food_pos[1] * 16 + 1, 14, 14)
 
@@ -46,6 +48,9 @@ class Game:
 
     def loop(self, screen: pygame.Surface):
         key = self.input_loop()
+        if(key == Direction.SKIP):
+            self.init()
+            return True
         self.player.moveDir(key)
         # player.move(0, 1)
         # m.addWall()
@@ -53,19 +58,24 @@ class Game:
         screen.fill((0, 0, 0))
         self.level.draw(screen)
         pygame.draw.rect(screen, (0, 255, 0), self.food_rect)
-        pygame.draw.rect(screen, (70, 130, 180), self.player.rect)
+        if self.hightlight:
+            pygame.draw.rect(screen, (200, 50, 50), self.player.rect)
+        else:
+            pygame.draw.rect(screen, (70, 130, 180), self.player.rect)
 
         # print(mazeToInput(m, player.posNormalized(), food_pos))
         # print(m.maze)
 
         # print(find_path(m, player.posNormalized(), food_pos))
-        self.level.add_path(
-            find_path(self.m, self.player.posNormalized(), self.food_pos))
+        # self.level.add_path(
+        #     find_path(self.m, self.player.posNormalized(), self.food_pos))
 
         self.player.update()
         if self.player.rect.colliderect(self.food_rect):
             print("you win!")
-            return False
+            # return False
+            self.init()
+            return True
 
         return True
 
@@ -83,11 +93,14 @@ def input_loop_human():
         # player.move(0, -1)
     if key[pygame.K_DOWN]:
         return Direction.DOWN
+    if key[pygame.K_s]:
+        return Direction.SKIP
     return Direction.NONE
 
 
 def run_human():
     game = Game(640, 640)
+    maze_to_1D(game.m)
     game.start(input_loop_human)
     exit()
 

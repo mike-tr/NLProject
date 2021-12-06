@@ -50,6 +50,14 @@ class Maze:
             self.maze.append(ar)
         self.floor = (self.width - 1)*(self.height-1)
 
+    def getWallsOnly(self):
+        walls = []
+        for y in range(1, self.height - 1):
+            for x in range(1, self.width - 1):
+                if x % 2 == 0 or y % 2 == 0:
+                    walls.append(self.getVal((x, y)))
+        return walls
+
     def initMaze(self):
         self.reset()
         # Randomized Kruskal's algorithm

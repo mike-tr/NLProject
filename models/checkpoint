@@ -1,0 +1,2 @@
+model_checkpoint_path: "nmodel_11x11[400, 200, 100]g_train"
+all_model_checkpoint_paths: "nmodel_11x11[400, 200, 100]g_train"

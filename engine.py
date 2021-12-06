@@ -9,13 +9,13 @@ class Draw:
 
 
 class Engine:
-    def __init__(self, width, length) -> None:
+    def __init__(self, width, length, fps) -> None:
         pygame.init()
         self.window = pygame.display.set_mode((width, length))
         self.run = True
         self.draw: Draw = None
         self.clock = pygame.time.Clock()
-        self.fps = 60
+        self.fps = fps
 
     def init(self, draw):
         self.draw = draw

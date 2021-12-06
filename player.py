@@ -9,6 +9,7 @@ class Direction:
     UP = 3
     DOWN = 2
     NONE = -1
+    SKIP = -2
 
     def valid(direction):
         if 0 <= direction <= 4:
